@@ -1,1 +1,1 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"qangan.heapsort","l":"Main"}];updateSearchResults();
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"qangan.heapsort","l":"Heapsort"},{"p":"qangan.heapsort","l":"Main"}];updateSearchResults();
