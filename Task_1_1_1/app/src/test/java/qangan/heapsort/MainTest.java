@@ -3,10 +3,12 @@
  */
 package qangan.heapsort;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import java.util.Random;
+
+import org.junit.jupiter.api.Test;
+
 import java.util.Arrays;
+import java.util.Random;
 
 class MainTest {
     @Test
@@ -20,7 +22,7 @@ class MainTest {
     void testSingleElement() {
         int[] arr = {2305};
         Main.heapSort(arr);
-        assertArrayEquals(new int[]{2305}, arr);
+        assertArrayEquals(new int[] {2305}, arr);
     }
 
     @Test
@@ -48,19 +50,24 @@ class MainTest {
         assertArrayEquals(expected, arr);
     }
 
-    @Test 
+    @Test
     void RandomArrays() {
         Random random = new Random();
-        for(int i = 0; i < 1000; i++){
-        int lenght = random.nextInt(1000);
-        int[] arr = new int[lenght];
-        for (int j = 0; j < lenght; j++){
-            arr[j] = random.nextInt(1000);
+        for (int i = 0; i < 1000; i++) {
+            int lenght = random.nextInt(1000);
+            int[] arr = new int[lenght];
+            for (int j = 0; j < lenght; j++) {
+                arr[j] = random.nextInt(1000);
+            }
+            int[] cprarray = arr.clone();
+            Main.heapSort(arr);
+            Arrays.sort(cprarray);
+            assertArrayEquals(arr, cprarray, "HeapSort made a bad work");
         }
-        int[] cprarray = arr.clone();
-        Main.heapSort(arr);
-        Arrays.sort(cprarray);
-        assertArrayEquals(arr, cprarray, "HeapSort made a bad work");
     }
+
+    @Test
+    void TestMain() {
+        assertNull(main());
     }
 }
