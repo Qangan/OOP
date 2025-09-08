@@ -2,70 +2,59 @@ package qangan.heapsort;
 
 import java.util.Arrays;
 
-/**
- * HeapSort implementation class.
- */
-
+/** HeapSort implementation class. */
 public class Main {
-    /**
-     * Supports heap invariance.
-     */
+  /** Supports heap invariance. */
+  private static void heapify(int arr[], int n, int i) {
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
 
-    private static void heapify(int arr[], int n, int i){
-        int largest = i;
-        int left = 2 * i + 1;
-        int right = 2 * i + 2;
-        
-        if (left < n && arr[left] > arr[largest]) {
-            largest = left;
-        }
-
-        if (right < n && arr[right] > arr[largest]) {
-            largest = right;
-        }
-        if (largest != i){
-            int temp = arr[i];
-            arr[i] = arr[largest];
-            arr[largest] = temp;
-
-            heapify(arr, n, largest);
-        }
+    if (left < n && arr[left] > arr[largest]) {
+      largest = left;
     }
-    /**
-     *  Builds heap.
-     */
 
-    private static void makeHeap(int[] arr) {
-        int n = arr.length;
-        for (int i = n / 2 - 1; i >= 0; i--) {
-            heapify(arr, n, i);
-        }
+    if (right < n && arr[right] > arr[largest]) {
+      largest = right;
     }
-    /**
-     * HeapSort implementation. O(nlogn)
-     *
-     * @param arr int - array to sort
-     */
+    if (largest != i) {
+      int temp = arr[i];
+      arr[i] = arr[largest];
+      arr[largest] = temp;
 
-    public static void heapSort(int[] arr) {
-        makeHeap(arr);
-        int n = arr.length;
-        for (int i = n - 1; i >= 0; i--) {
-            int temp = arr[0];
-            arr[0] = arr[i];
-            arr[i] = temp;
-
-            heapify(arr, i, 0);
-        }
+      heapify(arr, n, largest);
     }
-    /** 
-     * Example usage.
-     */
+  }
 
-    public static void main(String[] args) {
-        int[] a = { 1, 2, 9, 8, 7, 6, 99 };
-        heapSort(a);
-        System.out.println(Arrays.toString(a));
-
+  /** Builds heap. */
+  private static void makeHeap(int[] arr) {
+    int n = arr.length;
+    for (int i = n / 2 - 1; i >= 0; i--) {
+      heapify(arr, n, i);
     }
+  }
+
+  /**
+   * HeapSort implementation. O(nlogn)
+   *
+   * @param arr int - array to sort
+   */
+  public static void heapSort(int[] arr) {
+    makeHeap(arr);
+    int n = arr.length;
+    for (int i = n - 1; i >= 0; i--) {
+      int temp = arr[0];
+      arr[0] = arr[i];
+      arr[i] = temp;
+
+      heapify(arr, i, 0);
+    }
+  }
+
+  /** Example usage. */
+  public static void main(String[] args) {
+    int[] a = {1, 2, 9, 8, 7, 6, 99};
+    heapSort(a);
+    System.out.println(Arrays.toString(a));
+  }
 }
