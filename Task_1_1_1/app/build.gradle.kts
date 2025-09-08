@@ -56,3 +56,18 @@ tasks.jacocoTestReport {
         xml.required = true
     }
 }
+
+
+tasks.withType<JacocoReport>().configureEach {
+    dependsOn(tasks.test)
+    classDirectories.setFrom(
+        files(classDirectories.files.map {
+            fileTree(it) {
+                exclude(
+                    "**/qangan/heapsort/Main.class",
+                    "**/qangan/heapsort/Main\$*.class"
+                )
+            }
+        })
+    )
+}

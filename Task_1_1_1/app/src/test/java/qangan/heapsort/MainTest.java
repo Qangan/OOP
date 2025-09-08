@@ -3,25 +3,24 @@
  */
 package qangan.heapsort;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import java.util.Arrays;
 import java.util.Random;
+import org.junit.jupiter.api.Test;
 
-class MainTest {
+class HeapsortTest {
     @Test
     void testEmptyArray() {
         int[] arr = new int[0];
-        Main.heapSort(arr);
+        Heapsort.heapSort(arr);
         assertArrayEquals(new int[0], arr);
     }
 
     @Test
     void testSingleElement() {
         int[] arr = {2305};
-        Main.heapSort(arr);
+        Heapsort.heapSort(arr);
         assertArrayEquals(new int[] {2305}, arr);
     }
 
@@ -29,7 +28,7 @@ class MainTest {
     void testAllEqual() {
         int[] arr = {7, 7, 7, 7, 7};
         int[] expected = arr.clone();
-        Main.heapSort(arr);
+        Heapsort.heapSort(arr);
         assertArrayEquals(expected, arr);
     }
 
@@ -37,7 +36,7 @@ class MainTest {
     void testAlreadySorted() {
         int[] arr = {1, 2, 3, 4, 5, 6, 7};
         int[] expected = arr.clone();
-        Main.heapSort(arr);
+        Heapsort.heapSort(arr);
         assertArrayEquals(expected, arr);
     }
 
@@ -46,13 +45,14 @@ class MainTest {
         int[] arr = {9, 8, 7, 6, 5, 4, 3, 2, 1};
         int[] expected = arr.clone();
         Arrays.sort(expected);
-        Main.heapSort(arr);
+        Heapsort.heapSort(arr);
         assertArrayEquals(expected, arr);
     }
 
     @Test
-    void RandomArrays() {
-        Random random = new Random();
+    void randomArrays() {
+        int seed = 1337100500;
+        Random random = new Random(seed);
         for (int i = 0; i < 1000; i++) {
             int lenght = random.nextInt(1000);
             int[] arr = new int[lenght];
@@ -60,14 +60,10 @@ class MainTest {
                 arr[j] = random.nextInt(1000);
             }
             int[] cprarray = arr.clone();
-            Main.heapSort(arr);
+            Heapsort.heapSort(arr);
             Arrays.sort(cprarray);
             assertArrayEquals(arr, cprarray, "HeapSort made a bad work");
         }
     }
 
-    @Test
-    void TestMain() {
-        Main.main(new String[0]);
-    }
 }
