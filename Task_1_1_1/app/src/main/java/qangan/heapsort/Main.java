@@ -50,7 +50,7 @@ public class Main {
     public static void heapSort(int[] arr) {
         makeHeap(arr);
         int n = arr.length;
-        for(int i = n - 1; i >= 0; i--) {
+        for (int i = n - 1; i >= 0; i--) {
             int temp = arr[0];
             arr[0] = arr[i];
             arr[i] = temp;
@@ -63,7 +63,7 @@ public class Main {
      */
 
     public static void main(String[] args) {
-        int[] a = {1,2,9,8,7,6,99};
+        int[] a = { 1, 2, 9, 8, 7, 6, 99 };
         heapSort(a);
         System.out.println(Arrays.toString(a));
 
