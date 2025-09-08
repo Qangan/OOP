@@ -68,6 +68,6 @@ class MainTest {
 
     @Test
     void TestMain() {
-        assertNull(main());
+        Main.main(new String[0]);
     }
 }
