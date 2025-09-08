@@ -1,0 +1,8 @@
+*.hprof
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+.gradle-cache/
+out/
+app/build/
+run/
