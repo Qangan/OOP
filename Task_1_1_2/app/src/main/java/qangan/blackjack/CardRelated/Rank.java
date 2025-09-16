@@ -1,8 +1,6 @@
 package qangan.blackjack;
 
-/*
- * Rank enum.
- */
+/** Rank enum. */
 public enum Rank {
     ACE("Туз", 11),
     TWO("Двойка", 2),
@@ -21,28 +19,23 @@ public enum Rank {
     private final String label;
     private final int value;
 
+    /** Rank constructor. */
     Rank(String label, int value) {
         this.label = label;
         this.value = value;
     }
 
-    /*
-     * Label getter.
-     */
+    /** Label getter. */
     public String getLabel() {
         return label;
     }
 
-    /*
-     * Value getter.
-     */
+    /** Value getter. */
     public int getValue() {
         return value;
     }
 
-    /*
-     * String representation.
-     */
+    /** String representation. */
     @Override
     public String toString() {
         return label;

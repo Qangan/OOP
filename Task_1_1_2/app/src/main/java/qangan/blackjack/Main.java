@@ -3,7 +3,6 @@ package qangan.blackjack;
 import java.util.Arrays;
 
 /** Entry point. */
-
 public class Main {
     /** Example usage. */
     public static void main(String[] args) {

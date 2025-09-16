@@ -4,15 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/*
- * Deck class description.
- */
+/** Deck class description. */
 public class Deck {
     private final List<Card> cards;
 
-    /*
-     * Deck class constructor.
-     */
+    /** Deck class constructor. */
     public Deck() {
         cards = new ArrayList<>();
         for (Suit suit : Suit.values()) {
@@ -22,28 +18,21 @@ public class Deck {
         }
     }
 
-    /*
-     * Deck shuffle.
-     */
+    /** Deck shuffle. */
     public void shuffle() {
         Collections.shuffle(cards);
     }
 
-    /*
-     * Draw card.
-     */
+    /** Draw card. */
     public Card dealCard() {
         if (!cards.isEmpty()) {
             return cards.remove(cards.size() - 1);
         }
         return null;
     }
-    
-    /*
-     * Remaining cards.
-     */
+
+    /** Remaining cards. */
     public int remainingCards() {
         return cards.size();
     }
 }
-

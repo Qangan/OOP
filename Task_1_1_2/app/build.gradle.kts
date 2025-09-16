@@ -36,7 +36,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "qangan.heapsort.Main"
+    mainClass = "qangan.blackjack.Main"
 }
 
 tasks.named<Test>("test") {

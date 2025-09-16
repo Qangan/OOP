@@ -1,12 +1,10 @@
 package qangan.blackjack;
 
-/**
- * Card class description.
- */
+/** Card class description. */
 public class Card {
     private final Suit suit;
     private final Rank rank;
-    
+
     /**
      * Class constructor.
      *
@@ -18,33 +16,24 @@ public class Card {
         this.rank = rank;
     }
 
-    /**
-     * Rank getter.
-     */
+    /** Rank getter. */
     public Rank getRank() {
         return rank;
     }
 
-    /**
-     * Value getter.
-     */
+    /** Value getter. */
     public int getValue() {
         return rank.getValue();
     }
-    
-    /**
-     * Suit getter.
-     */
+
+    /** Suit getter. */
     public Suit getSuit() {
         return suit;
     }
 
-    /*
-     * String representation of card.
-     */
+    /** String representation of card. */
     @Override
     public String toString() {
         return rank + " " + suit;
     }
 }
-

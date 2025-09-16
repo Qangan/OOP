@@ -14,86 +14,85 @@ import org.junit.jupiter.api.Test;
 
 public class BlackjackTest {
 
-  @Test
-  void cardInteractions() {
-    Card c = new Card(Suit.SPADES, Rank.ACE);
-    assertSame(Suit.SPADES, c.getSuit());
-    assertSame(Rank.ACE, c.getRank());
-    assertEquals(c.getRank().getValue(), c.getValue());
-    assertFalse(c.toString().isEmpty());
-  }
-
-  @Test
-  void deckCount() {
-    Deck deck = new Deck();
-    int seen = 0;
-    Card dealt;
-    assertEquals(52, deck.remainingCards());
-    while ((dealt = deck.dealCard()) != null) {
-      assertNotNull(dealt);
-      seen += 1;
+    @Test
+    void cardInteractions() {
+        Card c = new Card(Suit.SPADES, Rank.ACE);
+        assertSame(Suit.SPADES, c.getSuit());
+        assertSame(Rank.ACE, c.getRank());
+        assertEquals(c.getRank().getValue(), c.getValue());
+        assertFalse(c.toString().isEmpty());
     }
-    assertEquals(52, seen);
-    assertEquals(0, deck.remainingCards());
-    assertNull(deck.dealCard());
-  }
 
-  @Test
-  void handFunctionality() {
-    Deck deck = new Deck();
-    Hand hand = new Hand();
-    assertEquals(0, hand.getCardCount());
-    hand.addCard(deck);
-    assertEquals(1, hand.getCardCount());
-    assertNotNull(hand.getCard(0));
-    assertNull(hand.getCard(-1));
-    assertNull(hand.getCard(1));
-  }
-
-  @Test
-  void handScoreTest() {
-    Deck deck = new Deck();
-    Hand hand = new Hand();
-    int prev = hand.getScore();
-    for (int i = 0; i < 5; i++) {
-      hand.addCard(deck);
-      int now = hand.getScore();
-      assertTrue(now >= prev);
-      prev = now;
+    @Test
+    void deckCount() {
+        Deck deck = new Deck();
+        int seen = 0;
+        Card dealt;
+        assertEquals(52, deck.remainingCards());
+        while ((dealt = deck.dealCard()) != null) {
+            assertNotNull(dealt);
+            seen += 1;
+        }
+        assertEquals(52, seen);
+        assertEquals(0, deck.remainingCards());
+        assertNull(deck.dealCard());
     }
-  }
 
-  @Test
-  void handClearResetsAll() {
-    Deck deck = new Deck();
-    Hand hand = new Hand();
-    hand.addCard(deck);
-    hand.addCard(deck);
-    assertTrue(hand.getCardCount() > 0);
-    assertTrue(hand.getScore() > 0);
-    hand.clear();
-    assertEquals(0, hand.getCardCount());
-    assertEquals(0, hand.getScore());
-    assertEquals("[]", hand.toString());
-  }
-
-  @Test
-  void aceIncrease() {
-    boolean validated = false;
-    for (int tries = 0; tries < 200; tries++) {
-      Deck deck = new Deck();
-      deck.shuffle();
-      Hand hand = new Hand();
-      int before = hand.getScore();
-      hand.addCard(deck);
-      Card last = hand.getCard(hand.getCardCount() - 1);
-      if (last.getRank() == Rank.ACE && before <= 10) {
-        assertEquals(before + 11, hand.getScore());
-        validated = true;
-        break;
-      }
+    @Test
+    void handFunctionality() {
+        Deck deck = new Deck();
+        Hand hand = new Hand();
+        assertEquals(0, hand.getCardCount());
+        hand.addCard(deck);
+        assertEquals(1, hand.getCardCount());
+        assertNotNull(hand.getCard(0));
+        assertNull(hand.getCard(-1));
+        assertNull(hand.getCard(1));
     }
-    assertTrue(validated);
-  }
+
+    @Test
+    void handScoreTest() {
+        Deck deck = new Deck();
+        Hand hand = new Hand();
+        int prev = hand.getScore();
+        for (int i = 0; i < 5; i++) {
+            hand.addCard(deck);
+            int now = hand.getScore();
+            assertTrue(now >= prev);
+            prev = now;
+        }
+    }
+
+    @Test
+    void handClearResetsAll() {
+        Deck deck = new Deck();
+        Hand hand = new Hand();
+        hand.addCard(deck);
+        hand.addCard(deck);
+        assertTrue(hand.getCardCount() > 0);
+        assertTrue(hand.getScore() > 0);
+        hand.clear();
+        assertEquals(0, hand.getCardCount());
+        assertEquals(0, hand.getScore());
+        assertEquals("[]", hand.toString());
+    }
+
+    @Test
+    void aceIncrease() {
+        boolean validated = false;
+        for (int tries = 0; tries < 200; tries++) {
+            Deck deck = new Deck();
+            deck.shuffle();
+            Hand hand = new Hand();
+            int before = hand.getScore();
+            hand.addCard(deck);
+            Card last = hand.getCard(hand.getCardCount() - 1);
+            if (last.getRank() == Rank.ACE && before <= 10) {
+                assertEquals(before + 11, hand.getScore());
+                validated = true;
+                break;
+            }
+        }
+        assertTrue(validated);
+    }
 }
-

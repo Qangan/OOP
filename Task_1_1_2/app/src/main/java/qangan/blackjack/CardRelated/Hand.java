@@ -3,26 +3,20 @@ package qangan.blackjack;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
- * Hand class implementation.
- */
+/** Hand class implementation. */
 public class Hand {
     private final List<Card> cards;
     private int score;
     private int aceCount;
 
-    /*
-     * Hand constructor.
-     */
+    /** Hand constructor. */
     public Hand() {
         this.cards = new ArrayList<>();
         this.score = 0;
         this.aceCount = 0;
     }
 
-    /*
-     * Draw card.
-     */
+    /** Draw card. */
     public void addCard(Deck deck) {
         Card card = deck.dealCard();
         if (card != null) {
@@ -38,16 +32,12 @@ public class Hand {
         }
     }
 
-    /*
-     * Blackjack checker.
-     */
-    public boolean isBlackjack(){
+    /** Blackjack checker. */
+    public boolean isBlackjack() {
         return getScore() == 21 && cards.size() == 2;
     }
 
-    /*
-     * Card getter.
-     */
+    /** Card getter. */
     public Card getCard(int index) {
         if (index >= 0 && index < cards.size()) {
             return cards.get(index);
@@ -55,35 +45,26 @@ public class Hand {
         return null;
     }
 
-    /*
-     * Cards count getter.
-     */
+    /** Cards count getter. */
     public int getCardCount() {
         return cards.size();
     }
 
-    /*
-     * Score getter.
-     */
-    public int getScore(){
+    /** Score getter. */
+    public int getScore() {
         return score;
     }
 
-    /*
-     * Hand clear.
-     */
+    /** Hand clear. */
     public void clear() {
         cards.clear();
         this.score = 0;
         this.aceCount = 0;
-    }   
+    }
 
-    /*
-     * String representation.
-     */
+    /** String representation. */
     @Override
     public String toString() {
         return cards.toString();
     }
 }
-
