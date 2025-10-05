@@ -18,7 +18,7 @@ public class Main {
         };
 
         for (Expression expr : expressions) {
-            System.out.println("Current: " + expr.toString());
+            System.out.println("Current: " + expr);
             int result = expr.eval(vars);
             System.out.println("Result: " + result);
             Expression deriv = expr.derivative("x");

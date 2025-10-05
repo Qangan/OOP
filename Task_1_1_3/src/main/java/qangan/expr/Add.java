@@ -54,6 +54,7 @@ public class Add extends Expression {
     public int eval(Map<String, Integer> variables) {
         return left.eval(variables) + right.eval(variables);
     }
+
     /**
      * Compares expressions.
      */
@@ -61,7 +62,7 @@ public class Add extends Expression {
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
-        } else if (obj instanceof Add other){
+        } else if (obj instanceof Add other) {
             return this.left.equals(other.left) && this.right.equals(other.right);
         } else {
             return false;

@@ -65,7 +65,7 @@ public class Mul extends Expression {
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
-        } else if (obj instanceof Mul other){
+        } else if (obj instanceof Mul other) {
             return this.left.equals(other.left) && this.right.equals(other.right);
         } else {
             return false;

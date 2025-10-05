@@ -61,10 +61,10 @@ public class Number extends Expression {
      * Compares numbers.
      */
     @Override
-    public boolean equals(Object obj){
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
-        } else if (obj instanceof Number other){
+        } else if (obj instanceof Number other) {
             return (this.value == other.value);
         } else {
             return false;

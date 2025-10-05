@@ -66,7 +66,7 @@ public class Variable extends Expression {
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
-        } else if (obj instanceof Variable other){
+        } else if (obj instanceof Variable other) {
             return Objects.equals(this.name, other.name);
         } else {
             return false;
