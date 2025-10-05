@@ -19,12 +19,12 @@ repositories {
 
 dependencies {
     // Use JUnit Jupiter for testing.
-    testImplementation(libs.junit.jupiter)
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // This dependency is used by the application.
-    implementation(libs.guava)
+    implementation("com.google.guava:guava:32.1.1-jre")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -56,7 +56,6 @@ tasks.jacocoTestReport {
         xml.required = true
     }
 }
-
 
 tasks.withType<JacocoReport>().configureEach {
     dependsOn(tasks.test)
