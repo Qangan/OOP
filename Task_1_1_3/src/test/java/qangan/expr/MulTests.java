@@ -1,9 +1,12 @@
 package qangan.expr;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.Test;
+
+/**
+ * Multiplication tests.
+ */
 public class MulTests {
     @Test
     void testToString() {

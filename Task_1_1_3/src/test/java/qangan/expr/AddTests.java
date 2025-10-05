@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Addition tests.
+ */
 public class AddTests {
     @Test
     void testToString() {
