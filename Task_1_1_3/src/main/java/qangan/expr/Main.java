@@ -1,6 +1,12 @@
 package qangan.expr;
 
+/**
+ * Demonstration of code functionality.
+ */
 public class Main {
+    /**
+     * Demonstration of code functionality.
+     */
     public static void main(String[] args) {
         String vars = "x = 4; y = 2; z = 2";
         System.out.println("x = 4; y = 2; z = 2");

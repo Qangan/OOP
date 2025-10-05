@@ -32,7 +32,7 @@ public class Parser {
         } else if (Character.isLetter(currentChar)) {
             return parseVariable();
         } else {
-            throw new RuntimeException("Unexpected character: " + currentChar + " at position " + position);
+            throw new RuntimeException("Unexpected char: " + currentChar + " at pos " + position);
         }
     }
 
