@@ -53,7 +53,7 @@ public class Number extends Expression {
      * Returns value of the expression given.
      */
     @Override
-    public int eval(Map<String, Integer> variables) {
+    protected int eval(Map<String, Integer> variables) {
         return value;
     }
 

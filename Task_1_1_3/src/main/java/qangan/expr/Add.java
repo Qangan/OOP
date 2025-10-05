@@ -51,7 +51,7 @@ public class Add extends Expression {
      * Returns value of the expression given.
      */
     @Override
-    public int eval(Map<String, Integer> variables) {
+    protected int eval(Map<String, Integer> variables) {
         return left.eval(variables) + right.eval(variables);
     }
 

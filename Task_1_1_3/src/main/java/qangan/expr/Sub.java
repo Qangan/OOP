@@ -51,7 +51,7 @@ public class Sub extends Expression {
      * Returns value.
      */
     @Override
-    public int eval(Map<String, Integer> variables) {
+    protected int eval(Map<String, Integer> variables) {
         return left.eval(variables) - right.eval(variables);
     }
 

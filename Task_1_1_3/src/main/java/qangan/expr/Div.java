@@ -57,7 +57,7 @@ public class Div extends Expression {
      * Returns value of the expression given.
      */
     @Override
-    public int eval(Map<String, Integer> variables) {
+    protected int eval(Map<String, Integer> variables) {
         int rightValue = right.eval(variables);
 
         return left.eval(variables) / rightValue;

@@ -51,7 +51,7 @@ public class Variable extends Expression {
      * Returns value.
      */
     @Override
-    public int eval(Map<String, Integer> variables) throws RuntimeException {
+    protected int eval(Map<String, Integer> variables) throws RuntimeException {
         if (variables.containsKey(name)) {
             return variables.get(name);
         } else {
