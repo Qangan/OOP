@@ -7,11 +7,11 @@ import java.util.Map;
  */
 public class Div extends Expression {
     /**
-     * Left operand
+     * Left operand.
      */
     protected final Expression left;
     /**
-     * Right operand
+     * Right operand.
      */
     protected final Expression right;
 

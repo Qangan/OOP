@@ -70,7 +70,8 @@ public class Parser {
             position++;
         }
 
-        while (position < expression.length() && Character.isDigit(expression.charAt(position))) {
+        while (position < expression.length()
+                && Character.isDigit(expression.charAt(position))) {
             position++;
         }
 
@@ -89,9 +90,9 @@ public class Parser {
     private Expression parseVariable() {
         int startPos = position;
 
-        while (position < expression.length() &&
-                (Character.isLetter(expression.charAt(position)) ||
-                        Character.isDigit(expression.charAt(position)))) {
+        while (position < expression.length()
+                && (Character.isLetter(expression.charAt(position))
+                        || Character.isDigit(expression.charAt(position)))) {
             position++;
         }
 

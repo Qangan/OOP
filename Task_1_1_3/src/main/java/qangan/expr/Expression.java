@@ -32,7 +32,7 @@ public abstract class Expression {
      * Returns value of expression.
      */
     public int eval(String variable) {
-        Map<String, Integer> variables = parse(variable);
+        Map<String, Integer> variables = parse_varlist(variable);
         return eval(variables);
     }
 
@@ -45,7 +45,7 @@ public abstract class Expression {
     /**
      * Parses string of variable assignments into a map.
      */
-    private Map<String, Integer> parse(String varlist) {
+    private Map<String, Integer> parse_varlist(String varlist) {
         Map<String, Integer> variables = new HashMap<>();
         if (varlist.trim().isEmpty()) {
             return variables;

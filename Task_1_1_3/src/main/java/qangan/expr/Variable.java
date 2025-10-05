@@ -8,7 +8,7 @@ import java.util.Objects;
  */
 public class Variable extends Expression {
     /**
-     * Variable name
+     * Variable name.
      */
     protected final String name;
 
