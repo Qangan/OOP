@@ -30,6 +30,7 @@ public abstract class Expression {
 
     /**
      * Returns value of expression.
+     * @throws RuntimeException if variables from string is not enough to compuge value.
      */
     public int eval(String variable) {
         Map<String, Integer> variables = parseVarList(variable);
