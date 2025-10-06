@@ -49,6 +49,7 @@ public class Variable extends Expression {
 
     /**
      * Returns value.
+     * @throws RuntimeException if variable doesnt exist.
      */
     @Override
     protected int eval(Map<String, Integer> variables) throws RuntimeException {
