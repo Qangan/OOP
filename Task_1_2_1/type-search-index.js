@@ -1,1 +1,1 @@
-typeSearchIndex = [{"p":"qangan.graph","l":"AdjMatrixGraph"},{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"qangan.graph","l":"Main"}];updateSearchResults();
+typeSearchIndex = [{"p":"qangan.graph","l":"AdjListGraph"},{"p":"qangan.graph","l":"AdjMatrixGraph"},{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"qangan.graph","l":"IncMatrixGraph"},{"p":"qangan.graph","l":"Main"}];updateSearchResults();
