@@ -9,20 +9,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class AdjMatrixGraph implements Graph {
+public class IncMatrixGraph implements Graph {
     private final List<Integer> vertices = new ArrayList<>();
-    private final List<List<Boolean>> matrix = new ArrayList<>();
+    private final List<List<Integer>> matrix = new ArrayList<>();
+    private final List<int[]> edges = new ArrayList<>();
 
     @Override
     public void addVertex(int v) {
         if (vertices.contains(v)) return;
         vertices.add(v);
-        int n = vertices.size();
-
-        matrix.add(new ArrayList<>(Collections.nCopies(n, false)));
-
-        for (int i = 0; i < n - 1; i++) {
-            matrix.get(i).add(false);
+        for (List<Integer> row : matrix) {
+            row.add(0);
         }
     }
 
@@ -31,37 +28,61 @@ public class AdjMatrixGraph implements Graph {
         int idx = vertices.indexOf(v);
         if (idx == -1) throw new IllegalArgumentException("Vertex does not exist");
         vertices.remove(idx);
-        matrix.remove(idx);
 
-        for (List<Boolean> row : matrix) {
+        for (List<Integer> row : matrix) {
             row.remove(idx);
+        }
+
+        for (int i = matrix.size() - 1; i >= 0; i--) {
+            if (edges.get(i)[0] == v || edges.get(i)[1] == v) {
+                matrix.remove(i);
+                edges.remove(i);
+            }
         }
     }
 
     @Override
     public void addEdge(int u, int v) {
-        int i = vertices.indexOf(u);
-        int j = vertices.indexOf(v);
-        if (i == -1 || j == -1) throw new IllegalArgumentException("Vertices must exist");
-        matrix.get(i).set(j, true);
+        int uIdx = vertices.indexOf(u);
+        int vIdx = vertices.indexOf(v);
+        if (uIdx == -1 || vIdx == -1) throw new IllegalArgumentException("Vertices must exist");
+        edges.add(new int[] {u, v});
+        List<Integer> row = new ArrayList<>(Collections.nCopies(vertices.size(), 0));
+        row.set(uIdx, 1);
+        row.set(vIdx, -1);
+        matrix.add(row);
     }
 
     @Override
-    public void removeEdge(int u, int v) {
-        int i = vertices.indexOf(u);
-        int j = vertices.indexOf(v);
-        if (i == -1 || j == -1) return;
-        matrix.get(i).set(j, false);
+    public void removeEdge(int u, int v) throws IllegalArgumentException {
+        int edgeIdx = -1;
+        for (int i = 0; i < edges.size(); i++) {
+            int[] edge = edges.get(i);
+            if ((edge[0] == u && edge[1] == v) || (edge[0] == v && edge[1] == u)) {
+                edgeIdx = i;
+                break;
+            }
+        }
+        if (edgeIdx == -1) return;
+
+        edges.remove(edgeIdx);
+        for (List<Integer> row : matrix) {
+            row.remove(edgeIdx);
+        }
     }
 
     @Override
     public List<Integer> getNeighbors(int v) {
-        int i = vertices.indexOf(v);
-        if (i == -1) return Collections.emptyList();
+        int vIdx = vertices.indexOf(v);
+        if (vIdx == -1) return Collections.emptyList();
         List<Integer> neighbors = new ArrayList<>();
-        List<Boolean> row = matrix.get(i);
-        for (int j = 0; j < vertices.size(); j++) {
-            if (row.get(j)) neighbors.add(vertices.get(j));
+        for (int i = 0; i < matrix.size(); i++) {
+            if (matrix.get(i).get(vIdx) == 1) {
+                int toIdx = matrix.get(i).indexOf(-1);
+                if (toIdx != -1) {
+                    neighbors.add(vertices.get(toIdx));
+                }
+            }
         }
         return neighbors;
     }
@@ -73,9 +94,13 @@ public class AdjMatrixGraph implements Graph {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (List<Boolean> row : matrix) {
-            for (Boolean x : row) sb.append(x ? 1 : 0).append(" ");
+        StringBuilder sb =
+                new StringBuilder(
+                        "Vertices: " + vertices + "\nEdges: " + edges.size() + "\nMatrix:\n");
+        for (List<Integer> row : matrix) {
+            for (Integer val : row) {
+                sb.append(val).append(" ");
+            }
             sb.append("\n");
         }
         return sb.toString();
@@ -100,6 +125,7 @@ public class AdjMatrixGraph implements Graph {
         }
         return true;
     }
+
     public void readFromFile(String filename) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             int numVertices = Integer.parseInt(br.readLine().trim());

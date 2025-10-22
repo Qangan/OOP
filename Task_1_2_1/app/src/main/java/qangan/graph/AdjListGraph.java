@@ -5,65 +5,54 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-public class AdjMatrixGraph implements Graph {
+public class AdjListGraph implements Graph {
     private final List<Integer> vertices = new ArrayList<>();
-    private final List<List<Boolean>> matrix = new ArrayList<>();
+    private final Map<Integer, List<Integer>> adjacency = new HashMap<>();
 
     @Override
     public void addVertex(int v) {
         if (vertices.contains(v)) return;
         vertices.add(v);
-        int n = vertices.size();
-
-        matrix.add(new ArrayList<>(Collections.nCopies(n, false)));
-
-        for (int i = 0; i < n - 1; i++) {
-            matrix.get(i).add(false);
-        }
+        adjacency.put(v, new ArrayList<>());
     }
 
     @Override
     public void removeVertex(int v) throws IllegalArgumentException {
-        int idx = vertices.indexOf(v);
-        if (idx == -1) throw new IllegalArgumentException("Vertex does not exist");
-        vertices.remove(idx);
-        matrix.remove(idx);
+        if (!vertices.contains(v)) throw new IllegalArgumentException("Vertex does not exist");
+        vertices.remove((Integer) v);
+        adjacency.remove(v);
 
-        for (List<Boolean> row : matrix) {
-            row.remove(idx);
+        for (List<Integer> neighbors : adjacency.values()) {
+            neighbors.remove((Integer) v);
         }
     }
 
     @Override
     public void addEdge(int u, int v) {
-        int i = vertices.indexOf(u);
-        int j = vertices.indexOf(v);
-        if (i == -1 || j == -1) throw new IllegalArgumentException("Vertices must exist");
-        matrix.get(i).set(j, true);
+        if (!vertices.contains(u) || !vertices.contains(v)) {
+            throw new IllegalArgumentException("Vertices must exist");
+        }
+        adjacency.get(u).add(v);
     }
 
     @Override
     public void removeEdge(int u, int v) {
-        int i = vertices.indexOf(u);
-        int j = vertices.indexOf(v);
-        if (i == -1 || j == -1) return;
-        matrix.get(i).set(j, false);
+        if (!vertices.contains(u) || !vertices.contains(v)) {
+            return;
+        }
+        adjacency.get(u).remove((Integer) v);
     }
 
     @Override
     public List<Integer> getNeighbors(int v) {
-        int i = vertices.indexOf(v);
-        if (i == -1) return Collections.emptyList();
-        List<Integer> neighbors = new ArrayList<>();
-        List<Boolean> row = matrix.get(i);
-        for (int j = 0; j < vertices.size(); j++) {
-            if (row.get(j)) neighbors.add(vertices.get(j));
-        }
-        return neighbors;
+        if (!vertices.contains(v)) return Collections.emptyList();
+        return new ArrayList<>(adjacency.get(v));
     }
 
     @Override
@@ -74,9 +63,8 @@ public class AdjMatrixGraph implements Graph {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (List<Boolean> row : matrix) {
-            for (Boolean x : row) sb.append(x ? 1 : 0).append(" ");
-            sb.append("\n");
+        for (int v : vertices) {
+            sb.append(v).append(": ").append(adjacency.get(v)).append("\n");
         }
         return sb.toString();
     }
@@ -100,6 +88,7 @@ public class AdjMatrixGraph implements Graph {
         }
         return true;
     }
+
     public void readFromFile(String filename) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             int numVertices = Integer.parseInt(br.readLine().trim());
