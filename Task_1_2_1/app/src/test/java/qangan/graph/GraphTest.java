@@ -9,7 +9,9 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public abstract class GraphTest {
 
@@ -36,6 +38,25 @@ public abstract class GraphTest {
         graph.addVertex(1);
         graph.removeVertex(1);
         assertFalse(graph.getVertices().contains(1));
+    }
+
+    @Test
+    void testRemoveVertexWithIncidentEdges_minimal() {
+        graph.addVertex(1);
+        graph.addVertex(2);
+        graph.addVertex(3);
+        graph.addEdge(1, 2);
+        graph.addEdge(2, 3);
+        graph.addEdge(3, 2);
+
+        graph.removeVertex(2);
+
+        assertFalse(graph.getVertices().contains(2));
+        for (int u : graph.getVertices()) {
+            assertFalse(
+                    graph.getNeighbors(u).contains(2),
+                    "edge incident to removed");
+        }
     }
 
     @Test
@@ -111,9 +132,9 @@ public abstract class GraphTest {
     @Test
     public void testGraphNotEqualsDifferentEdges() {
         Graph g1 = createGraph();
-        Graph g2 = createGraph();
         g1.addVertex(1);
         g1.addVertex(2);
+        Graph g2 = createGraph();
         g2.addVertex(1);
         g2.addVertex(2);
         g1.addEdge(1, 2);
@@ -121,34 +142,37 @@ public abstract class GraphTest {
     }
 
     @Test
-    public void testToStringNotEmpty() {
+    public void testToString() {
         graph.addVertex(1);
+        graph.addVertex(1);
+        graph.addVertex(2);
+        graph.addEdge(1, 2);
+        graph.addEdge(2, 1);
         String repr = graph.toString();
         assertNotNull(repr);
-        assertFalse(repr.isBlank());
+        assertEquals("2\n1 2\n2\n1 2\n2 1\n", repr);
     }
 
     @Test
     public void testGraphsDifferentImplementationsSameContent() {
         Graph g1 = new AdjListGraph();
-        Graph g2 = new AdjMatrixGraph();
-        Graph g3 = new IncMatrixGraph();
-
         g1.addVertex(1);
         g1.addVertex(2);
         g1.addEdge(1, 2);
-
+        Graph g2 = new AdjMatrixGraph();
         g2.addVertex(1);
         g2.addVertex(2);
         g2.addEdge(1, 2);
-
+        Graph g3 = new IncMatrixGraph();
         g3.addVertex(1);
         g3.addVertex(2);
         g3.addEdge(1, 2);
-
         assertEquals(g1, g2);
         assertEquals(g2, g3);
         assertEquals(g1, g3);
+        assertEquals(g1.toString(), g2.toString());
+        assertEquals(g1.toString(), g3.toString());
+        assertEquals(g2.toString(), g3.toString());
     }
 
     @Test
@@ -170,9 +194,22 @@ public abstract class GraphTest {
 
     @Test
     public void testReadFromNonExistentFile() {
-        assertThrows(IOException.class, () -> {
-            graph.readFromFile("/if/you/have/this/you/must/be/crazy");
-        });
+        assertThrows(
+                IOException.class,
+                () -> {
+                    graph.readFromFile("/if/you/have/this/you/must/be/crazy");
+                });
+    }
+
+    @Test
+    public void testOutOfOrderVertices() {
+        graph.addVertex(100500);
+        graph.addVertex(7);
+        graph.addVertex(42);
+        graph.addEdge(100500, 7);
+        graph.addEdge(7, 42);
+        assertEquals(Set.of(7), new HashSet<>(graph.getNeighbors(100500)));
+        assertEquals(Set.of(42), new HashSet<>(graph.getNeighbors(7)));
+        assertTrue(graph.getNeighbors(42).isEmpty());
     }
 }
-

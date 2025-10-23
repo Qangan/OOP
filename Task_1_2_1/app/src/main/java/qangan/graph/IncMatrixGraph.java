@@ -1,23 +1,27 @@
 package qangan.graph;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+/**
+ * Incidence matrix graph implementation.
+ */
 public class IncMatrixGraph implements Graph {
-    private final List<Integer> vertices = new ArrayList<>();
+
+    private final Set<Integer> vertices = new HashSet<>();
+    private final Map<Integer, Integer> idToIndex = new HashMap<>();
+    private final List<Integer> indexToId = new ArrayList<>();
     private final List<List<Integer>> matrix = new ArrayList<>();
     private final List<int[]> edges = new ArrayList<>();
 
     @Override
     public void addVertex(int v) {
-        if (vertices.contains(v)) return;
+        if (vertices.contains(v)) {
+            return;
+        }
         vertices.add(v);
+        int idx = indexToId.size();
+        idToIndex.put(v, idx);
+        indexToId.add(v);
         for (List<Integer> row : matrix) {
             row.add(0);
         }
@@ -25,83 +29,134 @@ public class IncMatrixGraph implements Graph {
 
     @Override
     public void removeVertex(int v) throws IllegalArgumentException {
-        int idx = vertices.indexOf(v);
-        if (idx == -1) throw new IllegalArgumentException("Vertex does not exist");
-        vertices.remove(idx);
-
+        Integer idxObj = idToIndex.get(v);
+        if (idxObj == null) {
+            throw new IllegalArgumentException("Vertex does not exist: " + v);
+        }
+        int idx = idxObj;
+        vertices.remove(v);
+        idToIndex.remove(v);
+        indexToId.remove(idx);
         for (List<Integer> row : matrix) {
             row.remove(idx);
         }
-
-        for (int i = matrix.size() - 1; i >= 0; i--) {
-            if (edges.get(i)[0] == v || edges.get(i)[1] == v) {
-                matrix.remove(i);
+        for (int i = edges.size() - 1; i >= 0; i--) {
+            int[] e = edges.get(i);
+            if (e[0] == v || e[1] == v) {
                 edges.remove(i);
+                matrix.remove(i);
             }
+        }
+        for (int i = idx; i < indexToId.size(); i++) {
+            idToIndex.put(indexToId.get(i), i);
         }
     }
 
     @Override
     public void addEdge(int u, int v) {
-        int uIdx = vertices.indexOf(u);
-        int vIdx = vertices.indexOf(v);
-        if (uIdx == -1 || vIdx == -1) throw new IllegalArgumentException("Vertices must exist");
+        Integer ui = idToIndex.get(u);
+        Integer vi = idToIndex.get(v);
+        List<Integer> missing = new ArrayList<>();
+        if (ui == null) {
+            missing.add(u);
+        }
+        if (vi == null) {
+            missing.add(v);
+        }
+        if (!missing.isEmpty()) {
+            throw new IllegalArgumentException("Vertices must exist: missing " + missing);
+        }
         edges.add(new int[] {u, v});
-        List<Integer> row = new ArrayList<>(Collections.nCopies(vertices.size(), 0));
-        row.set(uIdx, 1);
-        row.set(vIdx, -1);
+        List<Integer> row = new ArrayList<>(Collections.nCopies(indexToId.size(), 0));
+        row.set(ui, 1);
+        row.set(vi, -1);
         matrix.add(row);
     }
 
     @Override
-    public void removeEdge(int u, int v) throws IllegalArgumentException {
+    public void removeEdge(int u, int v) {
+        Integer ui = idToIndex.get(u);
+        Integer vi = idToIndex.get(v);
+        List<Integer> missing = new ArrayList<>();
+        if (ui == null) {
+            missing.add(u);
+        }
+        if (vi == null) {
+            missing.add(v);
+        }
+        if (!missing.isEmpty()) {
+            throw new IllegalArgumentException("Vertices must exist: missing " + missing);
+        }
         int edgeIdx = -1;
         for (int i = 0; i < edges.size(); i++) {
-            int[] edge = edges.get(i);
-            if ((edge[0] == u && edge[1] == v) || (edge[0] == v && edge[1] == u)) {
+            int[] e = edges.get(i);
+            if (e[0] == u && e[1] == v) {
                 edgeIdx = i;
                 break;
             }
         }
-        if (edgeIdx == -1) return;
-
-        edges.remove(edgeIdx);
-        for (List<Integer> row : matrix) {
-            row.remove(edgeIdx);
+        if (edgeIdx == -1) {
+            return;
         }
+        edges.remove(edgeIdx);
+        matrix.remove(edgeIdx);
     }
 
     @Override
     public List<Integer> getNeighbors(int v) {
-        int vIdx = vertices.indexOf(v);
-        if (vIdx == -1) return Collections.emptyList();
-        List<Integer> neighbors = new ArrayList<>();
-        for (int i = 0; i < matrix.size(); i++) {
-            if (matrix.get(i).get(vIdx) == 1) {
-                int toIdx = matrix.get(i).indexOf(-1);
+        Integer vi = idToIndex.get(v);
+        if (vi == null) {
+            return Collections.emptyList();
+        }
+        List<Integer> out = new ArrayList<>();
+        for (List<Integer> row : matrix) {
+            if (row.get(vi) == 1) {
+                int toIdx = -1;
+                for (int c = 0; c < row.size(); c++) {
+                    if (row.get(c) == -1) {
+                        toIdx = c;
+                        break;
+                    }
+                }
                 if (toIdx != -1) {
-                    neighbors.add(vertices.get(toIdx));
+                    out.add(indexToId.get(toIdx));
                 }
             }
         }
-        return neighbors;
+        return out;
     }
 
     @Override
-    public List<Integer> getVertices() {
-        return new ArrayList<>(vertices);
+    public Set<Integer> getVertices() {
+        return vertices;
     }
 
     @Override
     public String toString() {
-        StringBuilder sb =
-                new StringBuilder(
-                        "Vertices: " + vertices + "\nEdges: " + edges.size() + "\nMatrix:\n");
-        for (List<Integer> row : matrix) {
-            for (Integer val : row) {
-                sb.append(val).append(" ");
+        List<Integer> vs = new ArrayList<>(vertices);
+        Collections.sort(vs);
+
+        List<int[]> edgesList = new ArrayList<>(edges);
+        edgesList.sort(
+                (a, b) -> {
+                    if (a[0] != b[0]) {
+                        return Integer.compare(a[0], b[0]);
+                    }
+                    return Integer.compare(a[1], b[1]);
+                });
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(vs.size()).append('\n');
+        for (int i = 0; i < vs.size(); i++) {
+            if (i > 0) {
+                sb.append(' ');
             }
-            sb.append("\n");
+            sb.append(vs.get(i));
+        }
+        sb.append('\n');
+        sb.append(edgesList.size()).append('\n');
+        for (int[] e : edgesList) {
+            sb.append(e[0]).append(' ').append(e[1]).append('\n');
         }
         return sb.toString();
     }
@@ -126,23 +181,4 @@ public class IncMatrixGraph implements Graph {
         return true;
     }
 
-    public void readFromFile(String filename) throws IOException {
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-            int numVertices = Integer.parseInt(br.readLine().trim());
-
-            String[] vertexIds = br.readLine().trim().split("\\s+");
-            for (int i = 0; i < numVertices; i++) {
-                addVertex(Integer.parseInt(vertexIds[i]));
-            }
-
-            int numEdges = Integer.parseInt(br.readLine().trim());
-
-            for (int i = 0; i < numEdges; i++) {
-                String[] edge = br.readLine().trim().split("\\s+");
-                int from = Integer.parseInt(edge[0]);
-                int to = Integer.parseInt(edge[1]);
-                addEdge(from, to);
-            }
-        }
-    }
 }

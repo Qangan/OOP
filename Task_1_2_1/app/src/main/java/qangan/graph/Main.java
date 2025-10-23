@@ -18,18 +18,17 @@ public class Main {
         System.out.println(graph.topologicalSort());
         graph.removeVertex(2);
         System.out.println(graph);
-        graph.addVertex(2);
-        System.out.println(graph);
         System.out.println(graph.topologicalSort());
+        graph.addVertex(2);
     }
 
     /** Example usage. */
     public static void main(String[] args) {
-        Graph AMGraph = new AdjMatrixGraph();
-        Graph IMGraph = new IncMatrixGraph();
-        Graph ALGraph = new AdjListGraph();
-        example_usage(AMGraph);
-        example_usage(IMGraph);
-        example_usage(ALGraph);
+        Graph adMatGraph = new AdjMatrixGraph();
+        Graph inMatGraph = new IncMatrixGraph();
+        Graph adListGraph = new AdjListGraph();
+        example_usage(adMatGraph);
+        example_usage(inMatGraph);
+        example_usage(adListGraph);
     }
 }

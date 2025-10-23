@@ -1,8 +1,5 @@
 package qangan.graph;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,60 +8,106 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Adjacency list graph implementation.
+ */
 public class AdjListGraph implements Graph {
-    private final List<Integer> vertices = new ArrayList<>();
-    private final Map<Integer, List<Integer>> adjacency = new HashMap<>();
+    private final Set<Integer> vertices = new HashSet<>();
+    private final Map<Integer, Set<Integer>> adjacency = new HashMap<>();
 
     @Override
     public void addVertex(int v) {
-        if (vertices.contains(v)) return;
-        vertices.add(v);
-        adjacency.put(v, new ArrayList<>());
+        if (vertices.add(v)) {
+            adjacency.put(v, new HashSet<>());
+        }
     }
 
     @Override
     public void removeVertex(int v) throws IllegalArgumentException {
-        if (!vertices.contains(v)) throw new IllegalArgumentException("Vertex does not exist");
-        vertices.remove((Integer) v);
+        if (!vertices.contains(v)) {
+            throw new IllegalArgumentException("Vertex does not exist: " + v);
+        }
+        vertices.remove(v);
         adjacency.remove(v);
-
-        for (List<Integer> neighbors : adjacency.values()) {
-            neighbors.remove((Integer) v);
+        for (Set<Integer> nbrs : adjacency.values()) {
+            nbrs.remove(v);
         }
     }
 
     @Override
     public void addEdge(int u, int v) {
-        if (!vertices.contains(u) || !vertices.contains(v)) {
-            throw new IllegalArgumentException("Vertices must exist");
+        List<Integer> missing = new ArrayList<>();
+        if (!vertices.contains(u)) {
+            missing.add(u);
+        }
+        if (!vertices.contains(v)) {
+            missing.add(v);
+        }
+        if (!missing.isEmpty()) {
+            throw new IllegalArgumentException("Vertices must exist: missing " + missing);
         }
         adjacency.get(u).add(v);
     }
 
     @Override
     public void removeEdge(int u, int v) {
-        if (!vertices.contains(u) || !vertices.contains(v)) {
-            return;
+        List<Integer> missing = new ArrayList<>();
+        if (!vertices.contains(u)) {
+            missing.add(u);
         }
-        adjacency.get(u).remove((Integer) v);
+        if (!vertices.contains(v)) {
+            missing.add(v);
+        }
+        if (!missing.isEmpty()) {
+            throw new IllegalArgumentException("Vertices must exist: missing " + missing);
+        }
+        adjacency.get(u).remove(v);
     }
 
     @Override
     public List<Integer> getNeighbors(int v) {
-        if (!vertices.contains(v)) return Collections.emptyList();
+        if (!vertices.contains(v)) {
+            return Collections.emptyList();
+        }
         return new ArrayList<>(adjacency.get(v));
     }
 
     @Override
-    public List<Integer> getVertices() {
-        return new ArrayList<>(vertices);
+    public Set<Integer> getVertices() {
+        return vertices;
     }
 
     @Override
     public String toString() {
+        List<Integer> vs = new ArrayList<>(vertices);
+        Collections.sort(vs);
+
+        List<int[]> edgesList = new ArrayList<>();
+        for (int u : vs) {
+            for (int v : adjacency.getOrDefault(u, Collections.emptySet())) {
+                edgesList.add(new int[] {u, v});
+            }
+        }
+        edgesList.sort(
+                (a, b) -> {
+                    if (a[0] != b[0]) {
+                        return Integer.compare(a[0], b[0]);
+                    }
+                    return Integer.compare(a[1], b[1]);
+                });
+
         StringBuilder sb = new StringBuilder();
-        for (int v : vertices) {
-            sb.append(v).append(": ").append(adjacency.get(v)).append("\n");
+        sb.append(vs.size()).append('\n');
+        for (int i = 0; i < vs.size(); i++) {
+            if (i > 0) {
+                sb.append(' ');
+            }
+            sb.append(vs.get(i));
+        }
+        sb.append('\n');
+        sb.append(edgesList.size()).append('\n');
+        for (int[] e : edgesList) {
+            sb.append(e[0]).append(' ').append(e[1]).append('\n');
         }
         return sb.toString();
     }
@@ -74,8 +117,8 @@ public class AdjListGraph implements Graph {
         if (!(o instanceof Graph other)) {
             return false;
         }
-        Set<Integer> thisV = new HashSet<>(getVertices());
-        Set<Integer> otherV = new HashSet<>(other.getVertices());
+        Set<Integer> thisV = this.vertices;
+        Set<Integer> otherV = other.getVertices();
         if (!thisV.equals(otherV)) {
             return false;
         }
@@ -87,25 +130,5 @@ public class AdjListGraph implements Graph {
             }
         }
         return true;
-    }
-
-    public void readFromFile(String filename) throws IOException {
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-            int numVertices = Integer.parseInt(br.readLine().trim());
-
-            String[] vertexIds = br.readLine().trim().split("\\s+");
-            for (int i = 0; i < numVertices; i++) {
-                addVertex(Integer.parseInt(vertexIds[i]));
-            }
-
-            int numEdges = Integer.parseInt(br.readLine().trim());
-
-            for (int i = 0; i < numEdges; i++) {
-                String[] edge = br.readLine().trim().split("\\s+");
-                int from = Integer.parseInt(edge[0]);
-                int to = Integer.parseInt(edge[1]);
-                addEdge(from, to);
-            }
-        }
     }
 }

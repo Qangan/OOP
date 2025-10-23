@@ -1,5 +1,7 @@
 package qangan.graph;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,20 +9,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 
 /** Graph interface. */
-interface Graph {
+public interface Graph {
+
     /**
      * Add vertex.
      *
-     * @param v - vertex id
+     * @param v - vertex id. If already exists does nothing.
      */
     void addVertex(int v);
 
     /**
      * Remove vertex.
      *
-     * @param v - vertex id
+     * @param v - vertex id.
+     * @throws IllegalArgumentException if vertex doesnt exist
      */
     void removeVertex(int v) throws IllegalArgumentException;
 
@@ -66,25 +71,46 @@ interface Graph {
      */
     @Override
     boolean equals(Object o);
+    
+    /**
+     * Return vertices.
+     */
+    Set<Integer> getVertices();
 
     /**
      * Read graph from file with given name.
+     *
      * @param filename file name.
      * @throws IOException if file doesnt exist.
      */
-    void readFromFile(String filename) throws IOException;
+    default void readFromFile(String filename) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            int numVertices = Integer.parseInt(br.readLine().trim());
 
-    List<Integer> getVertices();
+            String[] vertexIds = br.readLine().trim().split("\\s+");
+            for (int i = 0; i < numVertices; i++) {
+                addVertex(Integer.parseInt(vertexIds[i]));
+            }
+
+            int numEdges = Integer.parseInt(br.readLine().trim());
+
+            for (int i = 0; i < numEdges; i++) {
+                String[] edge = br.readLine().trim().split("\\s+");
+                int from = Integer.parseInt(edge[0]);
+                int to = Integer.parseInt(edge[1]);
+                addEdge(from, to);
+            }
+        }
+    }
 
     /**
      * Topological sort implementation.
      *
      * @return Topological sort of graph.
+     * @throws RuntimeException if graph has cycles.
      */
-    default List<Integer> topologicalSort() {
-        List<Integer> result = new ArrayList<>();
+    default List<Integer> topologicalSort() throws RuntimeException {
         Map<Integer, Integer> inDegree = new HashMap<>();
-
         for (int vertex : getVertices()) {
             inDegree.put(vertex, 0);
         }
@@ -102,6 +128,7 @@ interface Graph {
             }
         }
 
+        List<Integer> result = new ArrayList<>();
         while (!queue.isEmpty()) {
             int vertex = queue.poll();
             result.add(vertex);
@@ -113,8 +140,6 @@ interface Graph {
                 }
             }
         }
-        System.out.println(result);
-        System.out.println(inDegree);
 
         if (result.size() != inDegree.size()) {
             throw new RuntimeException("Graph contains a cycle.");

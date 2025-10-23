@@ -1,82 +1,141 @@
 package qangan.graph;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+/**
+ * Adjacency matrix graph implementation.
+ */
 public class AdjMatrixGraph implements Graph {
-    private final List<Integer> vertices = new ArrayList<>();
-    private final List<List<Boolean>> matrix = new ArrayList<>();
+    private final Set<Integer> vertices = new HashSet<>();
+    private final Map<Integer, Integer> idToIndex = new HashMap<>();
+    private final List<Integer> indexToId = new ArrayList<>();
+    private final List<List<Integer>> matrix = new ArrayList<>();
 
     @Override
     public void addVertex(int v) {
-        if (vertices.contains(v)) return;
+        if (vertices.contains(v)) {
+            return;
+        }
         vertices.add(v);
-        int n = vertices.size();
+        int idx = indexToId.size();
+        idToIndex.put(v, idx);
+        indexToId.add(v);
 
-        matrix.add(new ArrayList<>(Collections.nCopies(n, false)));
-
-        for (int i = 0; i < n - 1; i++) {
-            matrix.get(i).add(false);
+        List<Integer> row = new ArrayList<>(Collections.nCopies(idx + 1, 0));
+        matrix.add(row);
+        for (int i = 0; i < idx; i++) {
+            matrix.get(i).add(0);
         }
     }
 
     @Override
     public void removeVertex(int v) throws IllegalArgumentException {
-        int idx = vertices.indexOf(v);
-        if (idx == -1) throw new IllegalArgumentException("Vertex does not exist");
-        vertices.remove(idx);
+        Integer idxObj = idToIndex.get(v);
+        if (idxObj == null) {
+            throw new IllegalArgumentException("Vertex does not exist: " + v);
+        }
+        int idx = idxObj;
+        vertices.remove(v);
+        idToIndex.remove(v);
+        indexToId.remove(idx);
         matrix.remove(idx);
-
-        for (List<Boolean> row : matrix) {
+        for (List<Integer> row : matrix) {
             row.remove(idx);
+        }
+        for (int i = idx; i < indexToId.size(); i++) {
+            idToIndex.put(indexToId.get(i), i);
         }
     }
 
     @Override
     public void addEdge(int u, int v) {
-        int i = vertices.indexOf(u);
-        int j = vertices.indexOf(v);
-        if (i == -1 || j == -1) throw new IllegalArgumentException("Vertices must exist");
-        matrix.get(i).set(j, true);
+        Integer i = idToIndex.get(u);
+        Integer j = idToIndex.get(v);
+        List<Integer> missing = new ArrayList<>();
+        if (i == null) {
+            missing.add(u);
+        }
+        if (j == null) {
+            missing.add(v);
+        }
+        if (!missing.isEmpty()) {
+            throw new IllegalArgumentException("Vertices must exist: missing " + missing);
+        }
+        matrix.get(i).set(j, 1);
     }
 
     @Override
     public void removeEdge(int u, int v) {
-        int i = vertices.indexOf(u);
-        int j = vertices.indexOf(v);
-        if (i == -1 || j == -1) return;
-        matrix.get(i).set(j, false);
+        Integer i = idToIndex.get(u);
+        Integer j = idToIndex.get(v);
+        List<Integer> missing = new ArrayList<>();
+        if (i == null) {
+            missing.add(u);
+        }
+        if (j == null) {
+            missing.add(v);
+        }
+        if (!missing.isEmpty()) {
+            throw new IllegalArgumentException("Vertices must exist: missing " + missing);
+        }
+        matrix.get(i).set(j, 0);
     }
 
     @Override
     public List<Integer> getNeighbors(int v) {
-        int i = vertices.indexOf(v);
-        if (i == -1) return Collections.emptyList();
-        List<Integer> neighbors = new ArrayList<>();
-        List<Boolean> row = matrix.get(i);
-        for (int j = 0; j < vertices.size(); j++) {
-            if (row.get(j)) neighbors.add(vertices.get(j));
+        Integer i = idToIndex.get(v);
+        if (i == null) {
+            return Collections.emptyList();
         }
-        return neighbors;
+        List<Integer> ns = new ArrayList<>();
+        List<Integer> row = matrix.get(i);
+        for (int j = 0; j < row.size(); j++) {
+            if (row.get(j) == 1) {
+                ns.add(indexToId.get(j));
+            }
+        }
+        return ns;
     }
 
     @Override
-    public List<Integer> getVertices() {
-        return new ArrayList<>(vertices);
+    public Set<Integer> getVertices() {
+        return vertices;
     }
 
     @Override
     public String toString() {
+        List<Integer> vs = new ArrayList<>(vertices);
+        Collections.sort(vs);
+
+        List<int[]> edgesList = new ArrayList<>();
+        for (int ui = 0; ui < indexToId.size(); ui++) {
+            int u = indexToId.get(ui);
+            for (int vi = 0; vi < indexToId.size(); vi++) {
+                if ((matrix.get(ui).get(vi)) == 1) {
+                    int v = indexToId.get(vi);
+                    edgesList.add(new int[]{u, v});
+                }
+            }
+        }
+        edgesList.sort((a, b) -> {
+            if (a[0] != b[0]) {
+                return Integer.compare(a[0], b[0]);
+            }
+            return Integer.compare(a[1], b[1]);
+        });
+
         StringBuilder sb = new StringBuilder();
-        for (List<Boolean> row : matrix) {
-            for (Boolean x : row) sb.append(x ? 1 : 0).append(" ");
-            sb.append("\n");
+        sb.append(vs.size()).append('\n');
+        for (int i = 0; i < vs.size(); i++) {
+            if (i > 0) {
+                sb.append(' ');
+            }
+            sb.append(vs.get(i));
+        }
+        sb.append('\n');
+        sb.append(edgesList.size()).append('\n');
+        for (int[] e : edgesList) {
+            sb.append(e[0]).append(' ').append(e[1]).append('\n');
         }
         return sb.toString();
     }
@@ -86,8 +145,8 @@ public class AdjMatrixGraph implements Graph {
         if (!(o instanceof Graph other)) {
             return false;
         }
-        Set<Integer> thisV = new HashSet<>(getVertices());
-        Set<Integer> otherV = new HashSet<>(other.getVertices());
+        Set<Integer> thisV = getVertices();
+        Set<Integer> otherV = other.getVertices();
         if (!thisV.equals(otherV)) {
             return false;
         }
@@ -100,23 +159,5 @@ public class AdjMatrixGraph implements Graph {
         }
         return true;
     }
-    public void readFromFile(String filename) throws IOException {
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-            int numVertices = Integer.parseInt(br.readLine().trim());
 
-            String[] vertexIds = br.readLine().trim().split("\\s+");
-            for (int i = 0; i < numVertices; i++) {
-                addVertex(Integer.parseInt(vertexIds[i]));
-            }
-
-            int numEdges = Integer.parseInt(br.readLine().trim());
-
-            for (int i = 0; i < numEdges; i++) {
-                String[] edge = br.readLine().trim().split("\\s+");
-                int from = Integer.parseInt(edge[0]);
-                int to = Integer.parseInt(edge[1]);
-                addEdge(from, to);
-            }
-        }
-    }
 }
