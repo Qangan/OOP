@@ -64,7 +64,6 @@ tasks.withType<JacocoReport>().configureEach {
         files(classDirectories.files.map {
             fileTree(it) {
                 exclude(
-                    "**/qangan/graph/Graph.class"
                 )
             }
         })
