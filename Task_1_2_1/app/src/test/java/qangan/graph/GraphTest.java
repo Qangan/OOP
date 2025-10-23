@@ -1,18 +1,19 @@
 package qangan.graph;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Abstract graph tests.
+ */
 public abstract class GraphTest {
 
     protected Graph graph;
@@ -110,10 +111,10 @@ public abstract class GraphTest {
     @Test
     public void testGraphEqualsDifferentGraphsSameContent() {
         Graph g1 = createGraph();
-        Graph g2 = createGraph();
         g1.addVertex(1);
         g1.addVertex(2);
         g1.addEdge(1, 2);
+        Graph g2 = createGraph();
         g2.addVertex(2);
         g2.addVertex(1);
         g2.addEdge(1, 2);
