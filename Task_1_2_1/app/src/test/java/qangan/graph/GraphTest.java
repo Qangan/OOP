@@ -229,4 +229,18 @@ public abstract class GraphTest {
         graph.removeEdge(0, 7);
         assertEquals(List.of(0), graph.getNeighbors(10));
     }
+
+    @Test
+    public void testDAGCycle(){
+        graph.addVertex(22);
+        graph.addVertex(12);
+        graph.addVertex(100500);
+        graph.addEdge(22, 12);
+        graph.addEdge(12, 100500);
+        graph.addEdge(100500, 12);
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> graph.topologicalSort()
+        );
+    }
     }
