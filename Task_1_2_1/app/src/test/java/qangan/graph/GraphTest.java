@@ -18,8 +18,7 @@ public abstract class GraphTest {
 
     protected Graph graph;
 
-    @TempDir
-    Path tempDir;
+    @TempDir Path tempDir;
 
     protected abstract Graph createGraph();
 
@@ -54,9 +53,7 @@ public abstract class GraphTest {
 
         assertFalse(graph.getVertices().contains(2));
         for (int u : graph.getVertices()) {
-            assertFalse(
-                    graph.getNeighbors(u).contains(2),
-                    "edge incident to removed");
+            assertFalse(graph.getNeighbors(u).contains(2), "edge incident to removed");
         }
     }
 
@@ -213,4 +210,23 @@ public abstract class GraphTest {
         assertEquals(Set.of(42), new HashSet<>(graph.getNeighbors(7)));
         assertTrue(graph.getNeighbors(42).isEmpty());
     }
-}
+
+    @Test
+    public void testRepetitiveAdds() {
+        graph.addVertex(10);
+        graph.addVertex(10);
+        graph.addVertex(0);
+        graph.addVertex(0);
+        graph.addVertex(0);
+        graph.addVertex(7);
+        graph.addVertex(7);
+        graph.addEdge(10, 0);
+        graph.addEdge(10, 0);
+        graph.addEdge(0, 7);
+        graph.addEdge(0, 7);
+        assertEquals(3, graph.getVertices().size());
+        assertEquals(List.of(0), graph.getNeighbors(10));
+        graph.removeEdge(0, 7);
+        assertEquals(List.of(0), graph.getNeighbors(10));
+    }
+    }

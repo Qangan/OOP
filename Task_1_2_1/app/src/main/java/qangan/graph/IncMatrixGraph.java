@@ -66,7 +66,16 @@ public class IncMatrixGraph implements Graph {
         if (!missing.isEmpty()) {
             throw new IllegalArgumentException("Vertices must exist: missing " + missing);
         }
-        edges.add(new int[] {u, v});
+
+        int[] newEdge = new int[] {u, v};
+
+        for (int[] edge : edges) {
+            if (Arrays.equals(newEdge, edge)) {
+                return;
+            }
+        }
+
+        edges.add(newEdge);
         List<Integer> row = new ArrayList<>(Collections.nCopies(indexToId.size(), 0));
         row.set(ui, 1);
         row.set(vi, -1);

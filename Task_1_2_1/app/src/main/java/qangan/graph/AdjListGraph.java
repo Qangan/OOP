@@ -46,6 +46,9 @@ public class AdjListGraph implements Graph {
         if (!missing.isEmpty()) {
             throw new IllegalArgumentException("Vertices must exist: missing " + missing);
         }
+        if (adjacency.get(u).contains(v)) {
+            return;
+        }
         adjacency.get(u).add(v);
     }
 
